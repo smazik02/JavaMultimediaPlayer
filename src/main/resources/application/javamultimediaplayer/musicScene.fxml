@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="437.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.javamultimediaplayer.MusicController">
+    <children>
+        <MenuBar layoutY="2.0" prefHeight="25.0" prefWidth="600.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="File">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#addFile" text="Add file">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#addFiles" text="Add files">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                        <SeparatorMenuItem mnemonicParsing="false" />
+                        <MenuItem mnemonicParsing="false" onAction="#closeApp" text="Close">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Playback">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Play" />
+                        <MenuItem mnemonicParsing="false" text="Stop" />
+                        <MenuItem mnemonicParsing="false" text="Previous" />
+                        <MenuItem mnemonicParsing="false" text="Next" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Sound">
+                    <items>
+                        <MenuItem mnemonicParsing="false" text="Volume up" />
+                        <MenuItem mnemonicParsing="false" text="Volume down" />
+                        <MenuItem mnemonicParsing="false" text="Mute" />
+                    </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#viewAbout" text="About">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="F1" control="UP" meta="UP" shift="DOWN" shortcut="UP" />
+                            </accelerator>
+                        </MenuItem>
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+      <BorderPane layoutY="27.0" prefHeight="412.0" prefWidth="600.0">
+         <bottom>
+            <Pane prefHeight="100.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Button fx:id="playpauseButton" layoutX="53.0" layoutY="50.0" mnemonicParsing="false" onAction="#playPauseMedia" text="⏵" textAlignment="CENTER">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="resetButton" layoutX="95.0" layoutY="50.0" mnemonicParsing="false" onAction="#resetMedia" text="⏹" textAlignment="CENTER">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="previousButton" layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#previousMedia" text="⏮" textAlignment="CENTER">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="nextButton" layoutX="135.0" layoutY="50.0" mnemonicParsing="false" onAction="#nextMedia" text="⏭" textAlignment="CENTER">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="repeatButton" layoutX="174.0" layoutY="50.0" mnemonicParsing="false" onAction="#setRepeat" text="🔁" textAlignment="CENTER">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Slider fx:id="volumeBar" layoutX="432.0" layoutY="63.0" minorTickCount="0" prefHeight="14.0" prefWidth="169.0" showTickMarks="true" value="66.0">
+                     <padding>
+                        <Insets right="20.0" />
+                     </padding>
+                  </Slider>
+                  <Slider fx:id="songProgress" layoutX="82.0" layoutY="20.0" prefHeight="14.0" prefWidth="518.0">
+                     <padding>
+                        <Insets right="20.0" />
+                     </padding>
+                  </Slider>
+                  <Label alignment="CENTER" layoutX="14.0" layoutY="19.0" prefHeight="17.0" prefWidth="63.0" text="--:-- / --:--" />
+               </children>
+            </Pane>
+         </bottom>
+         <right>
+            <ListView fx:id="fileListView" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </right>
+         <center>
+            <Label fx:id="songTitle" alignment="CENTER" prefHeight="35.0" prefWidth="398.0" text="Music Title" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+         </center>
+      </BorderPane>
+    </children>
+</AnchorPane>
