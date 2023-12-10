@@ -1,11 +1,9 @@
 package application.javamultimediaplayer;
 
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -15,7 +13,6 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LaunchController extends Controller {
@@ -31,8 +28,8 @@ public class LaunchController extends Controller {
 //        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            selectedFiles.add(selectedFile);
-            fileListView.getItems().add(selectedFiles.getFirst().getAbsolutePath());
+            mediaFiles.add(selectedFile);
+            fileListView.getItems().add(mediaFiles.getFirst().getAbsolutePath());
             confirmButton.setDisable(false);
         } else {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -49,7 +46,7 @@ public class LaunchController extends Controller {
         if (chosenFiles != null) {
             for (File chosenFile : chosenFiles) {
                 fileListView.getItems().add(chosenFile.getAbsolutePath());
-                selectedFiles.add(chosenFile);
+                mediaFiles.add(chosenFile);
             }
             confirmButton.setDisable(false);
         } else {
