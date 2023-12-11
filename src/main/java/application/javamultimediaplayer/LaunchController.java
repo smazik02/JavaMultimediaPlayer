@@ -32,8 +32,8 @@ public class LaunchController extends Controller {
             fileListView.getItems().add(mediaFiles.getFirst().getAbsolutePath());
             confirmButton.setDisable(false);
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("File doesn't exist");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("No files were selected");
             alert.show();
         }
     }
@@ -50,8 +50,8 @@ public class LaunchController extends Controller {
             }
             confirmButton.setDisable(false);
         } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setContentText("File doesn't exist");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setContentText("No files were selected");
             alert.show();
         }
     }
