@@ -143,7 +143,7 @@ public class Controller {
     }
 
     public void viewAbout() throws IOException {
-        FXMLLoader aboutLoader = new FXMLLoader(Main.class.getResource("aboutScene.fxml"));
+        FXMLLoader aboutLoader = new FXMLLoader(App.class.getResource("aboutScene.fxml"));
         Scene scene = new Scene(aboutLoader.load());
         Stage stage = new Stage();
         stage.setTitle("About");

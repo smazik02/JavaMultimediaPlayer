@@ -57,7 +57,7 @@ public class LaunchController extends Controller {
     }
 
     public void confirm(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("musicScene.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("musicScene.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
