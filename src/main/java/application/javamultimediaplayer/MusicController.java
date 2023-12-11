@@ -30,7 +30,7 @@ public class MusicController extends Controller implements Initializable {
         }
 
         if (mediaNumber > 0) {
-            --mediaNumber;
+            mediaNumber--;
             mediaPlayer.stop();
             if (running)
                 cancelTimer();
@@ -61,7 +61,7 @@ public class MusicController extends Controller implements Initializable {
             return;
         }
         if (mediaNumber < mediaFiles.size() - 1) {
-            ++mediaNumber;
+            mediaNumber++;
             mediaPlayer.stop();
             if (running)
                 cancelTimer();
