@@ -91,6 +91,11 @@ public class Controller {
         mediaPlayer.seek(Duration.seconds(0));
     }
 
+    public void seekMedia() {
+        double duration = songProgress.getValue() / 100;
+        mediaPlayer.seek(new Duration(duration * media.getDuration().toMillis()));
+    }
+
     public void muteMedia() {
         if (muteButton.isSelected()) {
             volumeBar.setDisable(true);
@@ -127,8 +132,8 @@ public class Controller {
                 Duration current = mediaPlayer.getCurrentTime();
                 Duration end = media.getDuration();
                 songProgress.setValue(current.toSeconds() / end.toSeconds() * 100);
-                Platform.runLater(() -> progressLabel.setText((int) current.toMinutes() + ":" + String.format("%02d", (int) current.toSeconds()%60) + " / "
-                                                            + (int) end.toMinutes() + ":" + String.format("%02d", (int) end.toSeconds()%60)));
+                Platform.runLater(() -> progressLabel.setText((int) current.toMinutes() + ":" + String.format("%02d", (int) current.toSeconds() % 60) + " / "
+                        + (int) end.toMinutes() + ":" + String.format("%02d", (int) end.toSeconds() % 60)));
                 if (current.toSeconds() / end.toSeconds() == 1) {
                     cancelTimer();
                 }

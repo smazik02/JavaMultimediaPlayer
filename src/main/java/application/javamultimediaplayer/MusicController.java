@@ -1,10 +1,12 @@
 package application.javamultimediaplayer;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.net.URL;
@@ -36,7 +38,9 @@ public class MusicController extends Controller implements Initializable {
                 cancelTimer();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnEndOfMedia(this::nextMedia);
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
+            Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
             playMedia();
         } else {
             mediaNumber = mediaFiles.size() - 1;
@@ -46,7 +50,9 @@ public class MusicController extends Controller implements Initializable {
             playpauseButton.setText("⏵");
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnEndOfMedia(this::nextMedia);
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
+            Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
             if (repeating.equals(Repeating.WHOLE)) {
                 playMedia();
             }
@@ -55,8 +61,8 @@ public class MusicController extends Controller implements Initializable {
 
     public void nextMedia() {
         if (repeating.equals(Repeating.ONE)) {
-            pauseMedia();
-            resetMedia();
+            songProgress.setValue(0);
+            mediaPlayer.seek(Duration.seconds(0));
             playMedia();
             return;
         }
@@ -67,7 +73,9 @@ public class MusicController extends Controller implements Initializable {
                 cancelTimer();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnEndOfMedia(this::nextMedia);
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
+            Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
             playMedia();
         } else {
             mediaNumber = 0;
@@ -77,7 +85,9 @@ public class MusicController extends Controller implements Initializable {
             playpauseButton.setText("⏵");
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnEndOfMedia(this::nextMedia);
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
+            Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
             if (repeating.equals(Repeating.WHOLE)) {
                 playMedia();
             }
@@ -94,6 +104,20 @@ public class MusicController extends Controller implements Initializable {
         for (File mediaFile : mediaFiles) {
             fileListView.getItems().add(mediaFile.getName());
         }
+
+        Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
+
+        fileListView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+            mediaNumber = fileListView.getSelectionModel().getSelectedIndex();
+            mediaPlayer.stop();
+            if (running)
+                cancelTimer();
+            media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
+            mediaPlayer = new MediaPlayer(media);
+            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            songTitle.setText(mediaFiles.get(mediaNumber).getName());
+            playMedia();
+        });
 
         volumeBar.valueProperty().addListener((observable, oldValue, newValue) -> {
             mediaPlayer.setVolume(volumeBar.getValue() * 0.01);

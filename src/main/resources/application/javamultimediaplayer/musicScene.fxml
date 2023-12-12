@@ -78,7 +78,7 @@
                         <Insets right="20.0" />
                      </padding>
                   </Slider>
-                  <Slider fx:id="songProgress" layoutX="82.0" layoutY="20.0" prefHeight="14.0" prefWidth="518.0">
+                  <Slider fx:id="songProgress" layoutX="82.0" layoutY="20.0" onMouseClicked="#seekMedia" onMouseExited="#seekMedia" prefHeight="14.0" prefWidth="518.0">
                      <padding>
                         <Insets right="20.0" />
                      </padding>
