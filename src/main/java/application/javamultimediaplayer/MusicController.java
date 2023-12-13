@@ -34,23 +34,19 @@ public class MusicController extends Controller implements Initializable {
         if (mediaNumber > 0) {
             mediaNumber--;
             mediaPlayer.stop();
-            if (running)
-                cancelTimer();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setMediaMethods();
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
             Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
             playMedia();
         } else {
             mediaNumber = mediaFiles.size() - 1;
             mediaPlayer.stop();
-            if (running)
-                cancelTimer();
             playpauseButton.setText("⏵");
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setMediaMethods();
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
             Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
             if (repeating.equals(Repeating.WHOLE)) {
@@ -69,23 +65,19 @@ public class MusicController extends Controller implements Initializable {
         if (mediaNumber < mediaFiles.size() - 1) {
             mediaNumber++;
             mediaPlayer.stop();
-            if (running)
-                cancelTimer();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setMediaMethods();
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
             Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
             playMedia();
         } else {
             mediaNumber = 0;
             mediaPlayer.stop();
-            if (running)
-                cancelTimer();
             playpauseButton.setText("⏵");
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setMediaMethods();
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
             Platform.runLater(() -> fileListView.getSelectionModel().select(mediaNumber));
             if (repeating.equals(Repeating.WHOLE)) {
@@ -94,11 +86,20 @@ public class MusicController extends Controller implements Initializable {
         }
     }
 
+    public void setMediaMethods() {
+        mediaPlayer.setOnEndOfMedia(this::nextMedia);
+        mediaPlayer.setOnPlaying(this::beginTimer);
+        mediaPlayer.setOnPaused(this::cancelTimer);
+        mediaPlayer.setOnStopped(this::cancelTimer);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        songProgress.prefWidthProperty().bind(controlPane.widthProperty());
+
         media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnEndOfMedia(this::nextMedia);
+        setMediaMethods();
         songTitle.setText(mediaFiles.get(mediaNumber).getName());
 
         for (File mediaFile : mediaFiles) {
@@ -110,11 +111,9 @@ public class MusicController extends Controller implements Initializable {
         fileListView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
             mediaNumber = fileListView.getSelectionModel().getSelectedIndex();
             mediaPlayer.stop();
-            if (running)
-                cancelTimer();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setMediaMethods();
             songTitle.setText(mediaFiles.get(mediaNumber).getName());
             playMedia();
         });

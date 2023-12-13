@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
@@ -23,6 +24,8 @@ enum Repeating {NO, ONE, WHOLE}
 public class Controller {
 
     @FXML
+    public Pane controlPane;
+    @FXML
     public Slider volumeBar, songProgress;
     @FXML
     public Button playpauseButton, resetButton, previousButton, nextButton;
@@ -38,7 +41,6 @@ public class Controller {
     static int mediaNumber = 0;
     static Timer timer;
     static TimerTask timerTask;
-    static boolean running;
     static Repeating repeating;
 
     public void addFile() {
@@ -72,15 +74,12 @@ public class Controller {
     }
 
     public void playMedia() {
-        beginTimer();
         mediaPlayer.setVolume(volumeBar.getValue() * 0.01);
         mediaPlayer.play();
         playpauseButton.setText("⏸");
     }
 
     public void pauseMedia() {
-        if (timer != null)
-            cancelTimer();
         mediaPlayer.pause();
         playpauseButton.setText("⏵");
     }
@@ -99,11 +98,11 @@ public class Controller {
     public void muteMedia() {
         if (muteButton.isSelected()) {
             volumeBar.setDisable(true);
-            mediaPlayer.setVolume(0);
+            mediaPlayer.setMute(true);
             volumeLabel.setText("0%");
         } else {
             volumeBar.setDisable(false);
-            mediaPlayer.setVolume(volumeBar.getValue() * 0.01);
+            mediaPlayer.setMute(false);
             volumeLabel.setText((int) volumeBar.getValue() + "%");
         }
     }
@@ -128,7 +127,6 @@ public class Controller {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                running = true;
                 Duration current = mediaPlayer.getCurrentTime();
                 Duration end = media.getDuration();
                 songProgress.setValue(current.toSeconds() / end.toSeconds() * 100);
@@ -143,7 +141,6 @@ public class Controller {
     }
 
     public void cancelTimer() {
-        running = false;
         timer.cancel();
     }
 
