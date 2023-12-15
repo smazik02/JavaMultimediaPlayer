@@ -96,6 +96,7 @@ public class MusicController extends Controller implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         songProgress.prefWidthProperty().bind(controlPane.widthProperty());
+        controlGrid.prefWidthProperty().bind(controlPane.widthProperty());
 
         media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
         mediaPlayer = new MediaPlayer(media);

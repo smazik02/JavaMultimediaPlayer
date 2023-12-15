@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -25,6 +26,8 @@ public class Controller {
 
     @FXML
     public Pane controlPane;
+    @FXML
+    public GridPane controlGrid;
     @FXML
     public Slider volumeBar, songProgress;
     @FXML
