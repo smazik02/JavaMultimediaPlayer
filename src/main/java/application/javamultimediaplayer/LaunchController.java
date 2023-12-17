@@ -3,9 +3,9 @@ package application.javamultimediaplayer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.stage.FileChooser;
@@ -13,50 +13,48 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
-public class LaunchController extends Controller {
+public class LaunchController extends Controller implements Initializable {
 
     @FXML
     private ListView<String> fileListView;
     @FXML
     private Button confirmButton;
 
+    private List<File> chosenFiles;
+
     public void selectFile(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
-//        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            mediaFiles.add(selectedFile);
-            fileListView.getItems().add(mediaFiles.getFirst().getAbsolutePath());
+            fileListView.getItems().add(selectedFile.getAbsolutePath());
+            chosenFiles.add(selectedFile);
             confirmButton.setDisable(false);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("No files were selected");
-            alert.show();
         }
     }
 
     public void selectFiles(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
-//        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
-        List<File> chosenFiles = fileChooser.showOpenMultipleDialog(null);
-        if (chosenFiles != null) {
-            for (File chosenFile : chosenFiles) {
-                fileListView.getItems().add(chosenFile.getAbsolutePath());
-                mediaFiles.add(chosenFile);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
+        List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
+        if (selectedFiles != null) {
+            for (File selectedFile : selectedFiles) {
+                fileListView.getItems().add(selectedFile.getAbsolutePath());
             }
+            chosenFiles.addAll(selectedFiles);
             confirmButton.setDisable(false);
-        } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setContentText("No files were selected");
-            alert.show();
         }
     }
 
     public void confirm(ActionEvent event) throws IOException {
+        multimediaController = new MultimediaController(chosenFiles);
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("musicScene.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load());
@@ -64,4 +62,8 @@ public class LaunchController extends Controller {
         stage.show();
     }
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        chosenFiles = new ArrayList<>();
+    }
 }

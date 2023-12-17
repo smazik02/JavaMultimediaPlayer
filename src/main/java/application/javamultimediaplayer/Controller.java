@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -15,12 +14,9 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-enum Repeating {NO, ONE, WHOLE}
 
 public class Controller {
 
@@ -38,38 +34,37 @@ public class Controller {
     public ListView<String> fileListView;
     @FXML
     public Label progressLabel, volumeLabel;
-    static List<File> mediaFiles = new ArrayList<>();
-    static Media media;
-    static MediaPlayer mediaPlayer;
-    static int mediaNumber = 0;
+
+    static MultimediaController multimediaController;
     static Timer timer;
     static TimerTask timerTask;
-    static Repeating repeating;
 
     public void addFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            mediaFiles.add(selectedFile);
-            fileListView.getItems().add(mediaFiles.getFirst().getAbsolutePath());
+            multimediaController.addMediaFile(selectedFile);
+            fileListView.getItems().add(selectedFile.getName());
         }
     }
 
     public void addFiles() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
-        List<File> chosenFiles = fileChooser.showOpenMultipleDialog(null);
-        if (chosenFiles != null) {
-            for (File chosenFile : chosenFiles) {
-                fileListView.getItems().add(chosenFile.getAbsolutePath());
-                mediaFiles.add(chosenFile);
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
+        List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
+        if (selectedFiles != null) {
+            for (File selectedFile : selectedFiles) {
+                fileListView.getItems().add(selectedFile.getName());
             }
+            multimediaController.addMediaFiles(selectedFiles);
         }
     }
 
     public void playPauseMedia() {
-        if (mediaPlayer.getStatus().equals(MediaPlayer.Status.PLAYING)) {
+        if (multimediaController.getMediaPlayer().getStatus().equals(MediaPlayer.Status.PLAYING)) {
             pauseMedia();
         } else {
             playMedia();
@@ -77,49 +72,50 @@ public class Controller {
     }
 
     public void playMedia() {
-        mediaPlayer.setVolume(volumeBar.getValue() * 0.01);
-        mediaPlayer.play();
+        multimediaController.playMedia();
+        beginTimer();
         playpauseButton.setText("⏸");
     }
 
     public void pauseMedia() {
-        mediaPlayer.pause();
+        multimediaController.pauseMedia();
+        cancelTimer();
         playpauseButton.setText("⏵");
     }
 
     public void resetMedia() {
-        pauseMedia();
+        multimediaController.resetMedia();
+        cancelTimer();
         songProgress.setValue(0);
-        mediaPlayer.seek(Duration.seconds(0));
+        playpauseButton.setText("⏵");
     }
 
     public void seekMedia() {
-        double duration = songProgress.getValue() / 100;
-        mediaPlayer.seek(new Duration(duration * media.getDuration().toMillis()));
+        multimediaController.seekMedia(songProgress.getValue() / 100);
     }
 
     public void muteMedia() {
         if (muteButton.isSelected()) {
             volumeBar.setDisable(true);
-            mediaPlayer.setMute(true);
+            multimediaController.setMute(true);
             volumeLabel.setText("0%");
         } else {
             volumeBar.setDisable(false);
-            mediaPlayer.setMute(false);
+            multimediaController.setMute(false);
             volumeLabel.setText((int) volumeBar.getValue() + "%");
         }
     }
 
     public void setRepeat() {
-        switch (repeating) {
-            case NO -> repeating = Repeating.WHOLE;
+        switch (multimediaController.getRepeating()) {
+            case NO -> multimediaController.setRepeating(Repeating.WHOLE);
             case WHOLE -> {
-                repeating = Repeating.ONE;
+                multimediaController.setRepeating(Repeating.ONE);
                 repeatButton.setSelected(true);
                 repeatButton.setText("\uD83D\uDD02");
             }
             case ONE -> {
-                repeating = Repeating.NO;
+                multimediaController.setRepeating(Repeating.NO);
                 repeatButton.setText("\uD83D\uDD01");
             }
         }
@@ -130,8 +126,8 @@ public class Controller {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                Duration current = mediaPlayer.getCurrentTime();
-                Duration end = media.getDuration();
+                Duration current = multimediaController.getMediaPlayer().getCurrentTime();
+                Duration end = multimediaController.getMedia().getDuration();
                 songProgress.setValue(current.toSeconds() / end.toSeconds() * 100);
                 Platform.runLater(() -> progressLabel.setText((int) current.toMinutes() + ":" + String.format("%02d", (int) current.toSeconds() % 60) + " / "
                         + (int) end.toMinutes() + ":" + String.format("%02d", (int) end.toSeconds() % 60)));
