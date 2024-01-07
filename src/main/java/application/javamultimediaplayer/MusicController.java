@@ -14,21 +14,22 @@ public class MusicController extends Controller implements Initializable {
     @FXML
     private Label songTitle;
 
+    @Override
     public void previousMedia() {
         if (multimediaController.getRepeating().equals(Repeating.ONE)) {
-            multimediaController.previousMedia();
+            this.resetMedia();
+            this.playMedia();
             return;
         }
 
-        if (multimediaController.getMediaPlayer().getCurrentTime().toSeconds() > 5) {
-            multimediaController.previousMedia();
+        if (multimediaController.getCurrentDuration().toSeconds() > 5) {
+            this.resetMedia();
+            this.playMedia();
             return;
         }
 
         if (multimediaController.getMediaNumber() > 0) {
             multimediaController.previousMedia();
-            songTitle.setText(multimediaController.getMediaFiles().get(multimediaController.getMediaNumber()).getName());
-            Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
         } else {
             multimediaController.previousMedia();
             cancelTimer();
@@ -36,21 +37,19 @@ public class MusicController extends Controller implements Initializable {
                 beginTimer();
             }
             playpauseButton.setText("⏵");
-            songTitle.setText(multimediaController.getMediaFiles().get(multimediaController.getMediaNumber()).getName());
-            Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
         }
+        songTitle.setText(multimediaController.getMediaName());
+        Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
     }
 
+    @Override
     public void nextMedia() {
         if (multimediaController.getRepeating().equals(Repeating.ONE)) {
-            songProgress.setValue(0);
-            multimediaController.nextMedia();
+            this.resetMedia();
             return;
         }
         if (multimediaController.getMediaNumber() < multimediaController.getMediaFiles().size() - 1) {
             multimediaController.nextMedia();
-            songTitle.setText(multimediaController.getMediaFiles().get(multimediaController.getMediaNumber()).getName());
-            Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
         } else {
             multimediaController.nextMedia();
             cancelTimer();
@@ -58,9 +57,9 @@ public class MusicController extends Controller implements Initializable {
                 return;
             beginTimer();
             playpauseButton.setText("⏵");
-            songTitle.setText(multimediaController.getMediaFiles().get(multimediaController.getMediaNumber()).getName());
-            Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
         }
+        songTitle.setText(multimediaController.getMediaName());
+        Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
     }
 
     @Override
@@ -68,23 +67,33 @@ public class MusicController extends Controller implements Initializable {
         songProgress.prefWidthProperty().bind(controlPane.widthProperty());
         controlGrid.prefWidthProperty().bind(controlPane.widthProperty());
 
-        songTitle.setText(multimediaController.getMediaFiles().get(multimediaController.getMediaNumber()).getName());
+//        multimediaController.setEventHandler();
+
+        songTitle.setText(multimediaController.getMediaName());
 
         for (File mediaFile : multimediaController.getMediaFiles()) {
             fileListView.getItems().add(mediaFile.getName());
         }
 
-        Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
-
-        fileListView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
-            multimediaController.selectMedia(fileListView.getSelectionModel().getSelectedIndex());
-            songTitle.setText(multimediaController.getMediaFiles().get(multimediaController.getMediaNumber()).getName());
-            playMedia();
+        Platform.runLater(() -> {
+            fileListView.getSelectionModel().select(multimediaController.getMediaNumber());
+            fileListView.getSelectionModel().selectedIndexProperty().addListener((observable, oldValue, newValue) -> {
+                multimediaController.selectMedia(fileListView.getSelectionModel().getSelectedIndex());
+                songTitle.setText(multimediaController.getMediaName());
+                playMedia();
+            });
         });
 
         volumeBar.valueProperty().addListener((observable, oldValue, newValue) -> {
             multimediaController.setVolume(volumeBar.getValue() * 0.01);
             volumeLabel.setText((int) volumeBar.getValue() + "%");
         });
+
+//        multimediaController.getMediaPlayer().setOnEndOfMedia(() -> {
+//            multimediaController.nextMedia();
+//            songProgress.setValue(0);
+//            songTitle.setText(multimediaController.getMediaName());
+//            Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
+//        });
     }
 }

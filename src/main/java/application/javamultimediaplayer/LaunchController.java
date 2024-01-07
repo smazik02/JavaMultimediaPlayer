@@ -27,7 +27,7 @@ public class LaunchController extends Controller implements Initializable {
 
     private List<File> chosenFiles;
 
-    public void selectFile(ActionEvent event) {
+    public void selectFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
@@ -39,7 +39,7 @@ public class LaunchController extends Controller implements Initializable {
         }
     }
 
-    public void selectFiles(ActionEvent event) {
+    public void selectFiles() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
@@ -58,8 +58,11 @@ public class LaunchController extends Controller implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("musicScene.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load());
+        Controller controller = fxmlLoader.getController();
         stage.setScene(scene);
         stage.show();
+        multimediaController.setController(controller);
+        multimediaController.setEventHandler();
     }
 
     @Override

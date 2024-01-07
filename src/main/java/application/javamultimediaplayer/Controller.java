@@ -64,7 +64,7 @@ public class Controller {
     }
 
     public void playPauseMedia() {
-        if (multimediaController.getMediaPlayer().getStatus().equals(MediaPlayer.Status.PLAYING)) {
+        if (multimediaController.getStatus().equals(MediaPlayer.Status.PLAYING)) {
             pauseMedia();
         } else {
             playMedia();
@@ -106,6 +106,50 @@ public class Controller {
         }
     }
 
+    public void previousMedia() {
+        if (multimediaController.getRepeating().equals(Repeating.ONE)) {
+            this.resetMedia();
+            this.playMedia();
+            return;
+        }
+
+        if (multimediaController.getCurrentDuration().toSeconds() > 5) {
+            this.resetMedia();
+            this.playMedia();
+            return;
+        }
+
+        if (multimediaController.getMediaNumber() > 0) {
+            multimediaController.previousMedia();
+        } else {
+            multimediaController.previousMedia();
+            cancelTimer();
+            if (multimediaController.getRepeating().equals(Repeating.WHOLE)) {
+                beginTimer();
+            }
+            playpauseButton.setText("⏵");
+        }
+        Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
+    }
+
+    public void nextMedia() {
+        if (multimediaController.getRepeating().equals(Repeating.ONE)) {
+            this.resetMedia();
+            return;
+        }
+        if (multimediaController.getMediaNumber() < multimediaController.getMediaFiles().size() - 1) {
+            multimediaController.nextMedia();
+        } else {
+            multimediaController.nextMedia();
+            cancelTimer();
+            if (multimediaController.getRepeating().equals(Repeating.NO))
+                return;
+            beginTimer();
+            playpauseButton.setText("⏵");
+        }
+        Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
+    }
+
     public void setRepeat() {
         switch (multimediaController.getRepeating()) {
             case NO -> multimediaController.setRepeating(Repeating.WHOLE);
@@ -126,8 +170,8 @@ public class Controller {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                Duration current = multimediaController.getMediaPlayer().getCurrentTime();
-                Duration end = multimediaController.getMedia().getDuration();
+                Duration current = multimediaController.getCurrentDuration();
+                Duration end = multimediaController.getTotalDuration();
                 songProgress.setValue(current.toSeconds() / end.toSeconds() * 100);
                 Platform.runLater(() -> progressLabel.setText((int) current.toMinutes() + ":" + String.format("%02d", (int) current.toSeconds() % 60) + " / "
                         + (int) end.toMinutes() + ":" + String.format("%02d", (int) end.toSeconds() % 60)));

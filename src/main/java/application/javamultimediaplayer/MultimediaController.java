@@ -15,22 +15,14 @@ public class MultimediaController {
     private MediaPlayer mediaPlayer;
     private int mediaNumber;
     private Repeating repeating;
+    private Controller controller;
 
     MultimediaController (List<File> files) {
         this.mediaNumber = 0;
         this.mediaFiles = new ArrayList<>(files);
         this.media = new Media(files.get(mediaNumber).toURI().toString());
         this.mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnEndOfMedia(this::nextMedia);
         this.repeating = Repeating.NO;
-    }
-
-    public void playPauseMedia() {
-        if (mediaPlayer.getStatus().equals(MediaPlayer.Status.PLAYING)) {
-            mediaPlayer.play();
-        } else {
-            mediaPlayer.pause();
-        }
     }
 
     public void playMedia() {
@@ -55,38 +47,24 @@ public class MultimediaController {
         mediaPlayer.stop();
         media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
-        mediaPlayer.setOnEndOfMedia(this::nextMedia);
+        setEventHandler();
         mediaPlayer.play();
     }
 
     public void previousMedia() {
-        if (repeating.equals(Repeating.ONE)) {
-            mediaPlayer.pause();
-            mediaPlayer.seek(new Duration(0));
-            mediaPlayer.play();
-            return;
-        }
-
-        if (mediaPlayer.getCurrentTime().toSeconds() > 5) {
-            mediaPlayer.pause();
-            mediaPlayer.seek(new Duration(0));
-            mediaPlayer.play();
-            return;
-        }
-
         if (mediaNumber > 0) {
             mediaNumber--;
             mediaPlayer.stop();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setEventHandler();
             mediaPlayer.play();
         } else {
             mediaNumber = mediaFiles.size() - 1;
             mediaPlayer.stop();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setEventHandler();
             if (repeating.equals(Repeating.WHOLE)) {
                 mediaPlayer.play();
             }
@@ -94,18 +72,12 @@ public class MultimediaController {
     }
 
     public void nextMedia() {
-        if (repeating.equals(Repeating.ONE)) {
-            mediaPlayer.pause();
-            mediaPlayer.seek(Duration.seconds(0));
-            mediaPlayer.play();
-            return;
-        }
         if (mediaNumber < mediaFiles.size() - 1) {
             mediaNumber++;
             mediaPlayer.stop();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setEventHandler();
             mediaPlayer.play();
         } else {
             mediaPlayer.stop();
@@ -115,7 +87,7 @@ public class MultimediaController {
             mediaNumber = 0;
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setOnEndOfMedia(this::nextMedia);
+            setEventHandler();
             if (repeating.equals(Repeating.WHOLE)) {
                 mediaPlayer.play();
             }
@@ -134,6 +106,10 @@ public class MultimediaController {
         return mediaFiles;
     }
 
+    public String getMediaName() {
+        return mediaFiles.get(mediaNumber).getName();
+    }
+
     public void setMediaFiles(List<File> mediaFiles) {
         this.mediaFiles = mediaFiles;
     }
@@ -150,12 +126,24 @@ public class MultimediaController {
         return media;
     }
 
+    public Duration getTotalDuration() {
+        return media.getDuration();
+    }
+
     public void setMedia(Media media) {
         this.media = media;
     }
 
     public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
+    }
+
+    public MediaPlayer.Status getStatus() {
+        return mediaPlayer.getStatus();
+    }
+
+    public Duration getCurrentDuration() {
+        return mediaPlayer.getCurrentTime();
     }
 
     public void setMediaPlayer(MediaPlayer mediaPlayer) {
@@ -176,6 +164,18 @@ public class MultimediaController {
 
     public void setRepeating(Repeating repeating) {
         this.repeating = repeating;
+    }
+
+    public Controller getController() {
+        return controller;
+    }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+    }
+
+    public void setEventHandler() {
+        mediaPlayer.setOnEndOfMedia(controller::nextMedia);
     }
 
 }
