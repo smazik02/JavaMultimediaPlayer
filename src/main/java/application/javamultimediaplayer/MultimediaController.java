@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultimediaController {
-
     private List<File> mediaFiles;
     private Media media;
     private MediaPlayer mediaPlayer;
@@ -17,7 +16,7 @@ public class MultimediaController {
     private Repeating repeating;
     private Controller controller;
 
-    MultimediaController (List<File> files) {
+    MultimediaController(List<File> files) {
         this.mediaNumber = 0;
         this.mediaFiles = new ArrayList<>(files);
         this.media = new Media(files.get(mediaNumber).toURI().toString());
@@ -65,7 +64,7 @@ public class MultimediaController {
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
             setEventHandler();
-            if (repeating.equals(Repeating.WHOLE)) {
+            if (repeating == Repeating.WHOLE) {
                 mediaPlayer.play();
             }
         }
@@ -81,14 +80,14 @@ public class MultimediaController {
             mediaPlayer.play();
         } else {
             mediaPlayer.stop();
-            if (repeating.equals(Repeating.NO)) {
+            if (repeating == Repeating.NO) {
                 return;
             }
             mediaNumber = 0;
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
             setEventHandler();
-            if (repeating.equals(Repeating.WHOLE)) {
+            if (repeating == Repeating.WHOLE) {
                 mediaPlayer.play();
             }
         }

@@ -27,11 +27,9 @@ public class Controller {
     @FXML
     public Slider volumeBar, songProgress;
     @FXML
-    public Button playpauseButton, resetButton, previousButton, nextButton;
+    public Button playpauseButton, resetButton, previousButton, nextButton, zenButton;
     @FXML
     public ToggleButton repeatButton, muteButton;
-    @FXML
-    public ListView<String> fileListView;
     @FXML
     public Label progressLabel, volumeLabel;
 
@@ -42,29 +40,23 @@ public class Controller {
     public void addFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             multimediaController.addMediaFile(selectedFile);
-            fileListView.getItems().add(selectedFile.getName());
         }
     }
 
     public void addFiles() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
         List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
         if (selectedFiles != null) {
-            for (File selectedFile : selectedFiles) {
-                fileListView.getItems().add(selectedFile.getName());
-            }
             multimediaController.addMediaFiles(selectedFiles);
         }
     }
 
     public void playPauseMedia() {
-        if (multimediaController.getStatus().equals(MediaPlayer.Status.PLAYING)) {
+        if (multimediaController.getStatus() == MediaPlayer.Status.PLAYING) {
             pauseMedia();
         } else {
             playMedia();
@@ -107,7 +99,7 @@ public class Controller {
     }
 
     public void previousMedia() {
-        if (multimediaController.getRepeating().equals(Repeating.ONE)) {
+        if (multimediaController.getRepeating() == Repeating.ONE) {
             this.resetMedia();
             this.playMedia();
             return;
@@ -124,16 +116,15 @@ public class Controller {
         } else {
             multimediaController.previousMedia();
             cancelTimer();
-            if (multimediaController.getRepeating().equals(Repeating.WHOLE)) {
+            if (multimediaController.getRepeating() == Repeating.WHOLE) {
                 beginTimer();
             }
             playpauseButton.setText("⏵");
         }
-        Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
     }
 
     public void nextMedia() {
-        if (multimediaController.getRepeating().equals(Repeating.ONE)) {
+        if (multimediaController.getRepeating() == Repeating.ONE) {
             this.resetMedia();
             return;
         }
@@ -142,12 +133,11 @@ public class Controller {
         } else {
             multimediaController.nextMedia();
             cancelTimer();
-            if (multimediaController.getRepeating().equals(Repeating.NO))
+            if (multimediaController.getRepeating() == Repeating.NO)
                 return;
             beginTimer();
             playpauseButton.setText("⏵");
         }
-        Platform.runLater(() -> fileListView.getSelectionModel().select(multimediaController.getMediaNumber()));
     }
 
     public void setRepeat() {

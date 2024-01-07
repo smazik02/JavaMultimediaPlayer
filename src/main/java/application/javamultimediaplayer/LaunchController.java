@@ -1,5 +1,6 @@
 package application.javamultimediaplayer;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -30,7 +31,6 @@ public class LaunchController extends Controller implements Initializable {
     public void selectFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
             fileListView.getItems().add(selectedFile.getAbsolutePath());
@@ -42,7 +42,6 @@ public class LaunchController extends Controller implements Initializable {
     public void selectFiles() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP3 files", "*.mp3"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("MP4 files", "*.mp4"));
         List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
         if (selectedFiles != null) {
             for (File selectedFile : selectedFiles) {
@@ -61,6 +60,10 @@ public class LaunchController extends Controller implements Initializable {
         Controller controller = fxmlLoader.getController();
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest(e -> {
+            Platform.exit();
+            System.exit(0);
+        });
         multimediaController.setController(controller);
         multimediaController.setEventHandler();
     }
