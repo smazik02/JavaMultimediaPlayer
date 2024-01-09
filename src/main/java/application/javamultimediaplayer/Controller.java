@@ -3,6 +3,7 @@ package application.javamultimediaplayer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -14,24 +15,26 @@ import javafx.util.Duration;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class Controller {
+public class Controller implements Initializable {
 
     @FXML
-    public Pane controlPane;
+    protected Pane controlPane;
     @FXML
-    public GridPane controlGrid;
+    protected GridPane controlGrid;
     @FXML
-    public Slider volumeBar, songProgress;
+    protected Slider volumeBar, songProgress;
     @FXML
-    public Button playpauseButton, resetButton, previousButton, nextButton, zenButton;
+    protected Button playpauseButton, resetButton, previousButton, nextButton, zenButton;
     @FXML
-    public ToggleButton repeatButton, muteButton;
+    protected ToggleButton repeatButton, muteButton;
     @FXML
-    public Label progressLabel, volumeLabel;
+    protected Label progressLabel, volumeLabel;
 
     static MultimediaController multimediaController;
     static Timer timer;
@@ -163,8 +166,9 @@ public class Controller {
                 Duration current = multimediaController.getCurrentDuration();
                 Duration end = multimediaController.getTotalDuration();
                 songProgress.setValue(current.toSeconds() / end.toSeconds() * 100);
-                Platform.runLater(() -> progressLabel.setText((int) current.toMinutes() + ":" + String.format("%02d", (int) current.toSeconds() % 60) + " / "
-                        + (int) end.toMinutes() + ":" + String.format("%02d", (int) end.toSeconds() % 60)));
+                Platform.runLater(() -> progressLabel.setText((int) current.toMinutes() + ":"
+                        + String.format("%02d", (int) current.toSeconds() % 60) + " / " + (int) end.toMinutes() + ":"
+                        + String.format("%02d", (int) end.toSeconds() % 60)));
                 if (current.toSeconds() / end.toSeconds() == 1) {
                     cancelTimer();
                 }
@@ -190,6 +194,52 @@ public class Controller {
     public void closeApp() {
         Platform.exit();
         System.exit(0);
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        songProgress.prefWidthProperty().bind(controlPane.widthProperty());
+        controlGrid.prefWidthProperty().bind(controlPane.widthProperty());
+
+        volumeBar.valueProperty().addListener((observable, oldValue, newValue) -> {
+            multimediaController.setVolume(volumeBar.getValue() * 0.01);
+            volumeLabel.setText((int) volumeBar.getValue() + "%");
+        });
+
+        if (multimediaController.getStatus() == MediaPlayer.Status.PLAYING) {
+            multimediaController.playMedia();
+            beginTimer();
+            playpauseButton.setText("⏸");
+        } else {
+            multimediaController.pauseMedia();
+            beginTimer();
+            cancelTimer();
+            playpauseButton.setText("⏵");
+        }
+
+        if (multimediaController.getMute()) {
+            volumeBar.setDisable(true);
+            volumeLabel.setText("0%");
+            muteButton.setSelected(true);
+        }
+
+        switch (multimediaController.getRepeating()) {
+            case NO -> {
+                repeatButton.setSelected(false);
+                repeatButton.setText("\uD83D\uDD01");
+                multimediaController.setRepeating(Repeating.NO);
+            }
+            case WHOLE -> {
+                repeatButton.setSelected(true);
+                repeatButton.setText("\uD83D\uDD01");
+                multimediaController.setRepeating(Repeating.WHOLE);
+            }
+            case ONE -> {
+                repeatButton.setSelected(true);
+                repeatButton.setText("\uD83D\uDD02");
+                multimediaController.setRepeating(Repeating.ONE);
+            }
+        }
     }
 
 }

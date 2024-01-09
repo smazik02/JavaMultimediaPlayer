@@ -42,21 +42,29 @@ public class MultimediaController {
     }
 
     public void selectMedia(int toMediaNumber) {
+        double previousVolume = mediaPlayer.getVolume();
+        boolean previousMute = mediaPlayer.isMute();
         this.mediaNumber = toMediaNumber;
         mediaPlayer.stop();
         media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
         mediaPlayer = new MediaPlayer(media);
         setEventHandler();
+        mediaPlayer.setVolume(previousVolume);
+        mediaPlayer.setMute(previousMute);
         mediaPlayer.play();
     }
 
     public void previousMedia() {
+        double previousVolume = mediaPlayer.getVolume();
+        boolean previousMute = mediaPlayer.isMute();
         if (mediaNumber > 0) {
             mediaNumber--;
             mediaPlayer.stop();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
             setEventHandler();
+            mediaPlayer.setVolume(previousVolume);
+            mediaPlayer.setMute(previousMute);
             mediaPlayer.play();
         } else {
             mediaNumber = mediaFiles.size() - 1;
@@ -64,6 +72,8 @@ public class MultimediaController {
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
             setEventHandler();
+            mediaPlayer.setVolume(previousVolume);
+            mediaPlayer.setMute(previousMute);
             if (repeating == Repeating.WHOLE) {
                 mediaPlayer.play();
             }
@@ -71,26 +81,33 @@ public class MultimediaController {
     }
 
     public void nextMedia() {
+        double previousVolume = mediaPlayer.getVolume();
+        boolean previousMute = mediaPlayer.isMute();
         if (mediaNumber < mediaFiles.size() - 1) {
             mediaNumber++;
             mediaPlayer.stop();
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
             setEventHandler();
+            mediaPlayer.setVolume(previousVolume);
+            mediaPlayer.setMute(previousMute);
             mediaPlayer.play();
         } else {
             mediaPlayer.stop();
-            if (repeating == Repeating.NO) {
-                return;
-            }
             mediaNumber = 0;
             media = new Media(mediaFiles.get(mediaNumber).toURI().toString());
             mediaPlayer = new MediaPlayer(media);
             setEventHandler();
+            mediaPlayer.setVolume(previousVolume);
+            mediaPlayer.setMute(previousMute);
             if (repeating == Repeating.WHOLE) {
                 mediaPlayer.play();
             }
         }
+    }
+
+    public boolean getMute() {
+        return mediaPlayer.isMute();
     }
 
     public void setMute(boolean mute) {
@@ -114,11 +131,11 @@ public class MultimediaController {
     }
 
     public void addMediaFile(File file) {
-        this.mediaFiles.add(file);
+        mediaFiles.add(file);
     }
 
     public void addMediaFiles(List<File> files) {
-        this.mediaFiles.addAll(files);
+        mediaFiles.addAll(files);
     }
 
     public Media getMedia() {

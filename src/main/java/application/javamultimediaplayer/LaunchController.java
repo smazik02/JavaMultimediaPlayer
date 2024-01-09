@@ -57,14 +57,13 @@ public class LaunchController extends Controller implements Initializable {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("musicScene.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load());
-        Controller controller = fxmlLoader.getController();
         stage.setScene(scene);
         stage.show();
         stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
         });
-        multimediaController.setController(controller);
+        multimediaController.setController(fxmlLoader.getController());
         multimediaController.setEventHandler();
     }
 

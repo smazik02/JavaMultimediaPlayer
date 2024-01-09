@@ -75,13 +75,13 @@ public class MusicController extends Controller implements Initializable {
             Platform.exit();
             System.exit(0);
         });
+        multimediaController.setController(loader.getController());
+        multimediaController.setEventHandler();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        songProgress.prefWidthProperty().bind(controlPane.widthProperty());
-        controlGrid.prefWidthProperty().bind(controlPane.widthProperty());
-
+        super.initialize(location, resources);
         songTitle.setText(multimediaController.getMediaName());
 
         for (File mediaFile : multimediaController.getMediaFiles()) {
@@ -95,11 +95,6 @@ public class MusicController extends Controller implements Initializable {
                 songTitle.setText(multimediaController.getMediaName());
                 playMedia();
             });
-        });
-
-        volumeBar.valueProperty().addListener((observable, oldValue, newValue) -> {
-            multimediaController.setVolume(volumeBar.getValue() * 0.01);
-            volumeLabel.setText((int) volumeBar.getValue() + "%");
         });
     }
 
