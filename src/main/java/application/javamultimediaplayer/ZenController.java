@@ -20,11 +20,13 @@ public class ZenController extends Controller implements Initializable {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.show();
+        stage.setMinHeight(210);
+        stage.setResizable(true);
         stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
         });
+        stage.show();
         multimediaController.setController(loader.getController());
         multimediaController.setEventHandler();
     }

@@ -58,11 +58,14 @@ public class LaunchController extends Controller implements Initializable {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(fxmlLoader.load());
         stage.setScene(scene);
-        stage.show();
+        stage.setResizable(true);
+        stage.setMinWidth(600);
+        stage.setMinHeight(210);
         stage.setOnCloseRequest(e -> {
             Platform.exit();
             System.exit(0);
         });
+        stage.show();
         multimediaController.setController(fxmlLoader.getController());
         multimediaController.setEventHandler();
     }

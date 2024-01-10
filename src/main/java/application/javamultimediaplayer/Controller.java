@@ -103,14 +103,14 @@ public class Controller implements Initializable {
 
     public void previousMedia() {
         if (multimediaController.getRepeating() == Repeating.ONE) {
-            this.resetMedia();
-            this.playMedia();
+            resetMedia();
+            playMedia();
             return;
         }
 
         if (multimediaController.getCurrentDuration().toSeconds() > 5) {
-            this.resetMedia();
-            this.playMedia();
+            resetMedia();
+            playMedia();
             return;
         }
 
@@ -128,7 +128,8 @@ public class Controller implements Initializable {
 
     public void nextMedia() {
         if (multimediaController.getRepeating() == Repeating.ONE) {
-            this.resetMedia();
+            resetMedia();
+            playMedia();
             return;
         }
         if (multimediaController.getMediaNumber() < multimediaController.getMediaFiles().size() - 1) {
